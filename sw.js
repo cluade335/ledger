@@ -1,6 +1,6 @@
 // 离线缓存：装到手机后，没网也能打开记账本。
 // 改了程序文件后把版本号 +1，手机下次打开时会自动更新。
-const CACHE = 'ledger-v2';
+const CACHE = 'ledger-v3';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png'];
 
 self.addEventListener('install', e => {

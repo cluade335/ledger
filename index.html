@@ -3,33 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#2a78d6">
+<meta name="theme-color" content="#ffc23d">
 <title>我的记账本</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>
 :root{
-  color-scheme: light dark;
-  --bg:#f4f4f1; --card:#ffffff; --ink:#0b0b0b; --ink2:#52514e; --ink3:#86857f;
-  --line:#e6e5e0; --grid:#ecebe6; --hover:#f6f6f3;
-  --accent:#2a78d6; --accent-ink:#1c5cab; --accent-soft:#e8f1fc;
-  --s1:#2a78d6; --s2:#eb6834; --s1-soft:#e3eefb; --s2-soft:#fdebe3;
-  --good:#0a7a0a; --warn:#a36b00; --bad:#c42f2f; --warn-bar:#eda100; --bad-bar:#d03b3b;
-  --warn-bg:#fff4dc;
-  --shadow:0 1px 2px rgba(0,0,0,.05), 0 2px 8px rgba(0,0,0,.04);
-  --navh:60px;
-}
-@media (prefers-color-scheme: dark){
-  :root{
-    --bg:#0d0d0d; --card:#1a1a19; --ink:#f0efec; --ink2:#c3c2b7; --ink3:#8f8e86;
-    --line:#2e2e2b; --grid:#2a2a27; --hover:#222220;
-    --accent:#3987e5; --accent-ink:#86b6ef; --accent-soft:#1c2838;
-    --s1:#3987e5; --s2:#d95926; --s1-soft:#1c2838; --s2-soft:#3a2219;
-    --good:#5fc95f; --warn:#e0a526; --bad:#ee7b7b; --warn-bar:#c98500; --bad-bar:#e66767;
-    --warn-bg:#3a2d10;
-    --shadow:none;
-  }
+  color-scheme: light;
+  /* 明亮可爱主题：奶油黄底、阳光黄按钮、暖棕色文字 */
+  --bg:#fff7df; --card:rgba(255,255,255,.94); --ink:#3b2f1e; --ink2:#6e5b3e; --ink3:#a08c6a;
+  --line:#f3e3b8; --grid:#f5ebd0; --hover:#fff3cc;
+  --accent:#ffc23d; --accent-dark:#e3a215; --accent-ink:#6b4700; --accent-soft:#fff0c2;
+  --s1:#2a78d6; --s2:#eb6834; --s1-soft:#e2efff; --s2-soft:#ffe7dc;
+  --good:#22913a; --warn:#a36b00; --bad:#d63a3a; --warn-bar:#eda100; --bad-bar:#e04848;
+  --warn-bg:#fff1c9;
+  --shadow:0 4px 0 rgba(227,162,21,.16), 0 6px 18px rgba(120,80,0,.06);
+  --navh:64px;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0}
@@ -164,9 +154,96 @@ details summary{cursor:pointer;color:var(--ink2);font-size:14px;margin-top:8px;p
 .rc-row .t2{font-size:12px;color:var(--ink3)}
 .rc-row .amt{text-align:right;font-weight:700;white-space:nowrap}
 .rc-row .amt small{display:block;font-weight:400;font-size:12px;color:var(--ink3)}
+
+/* ================= 明亮可爱主题 ================= */
+body{background:transparent;font-family:"PingFang SC","HarmonyOS Sans SC","MiSans","Microsoft YaHei UI",system-ui,sans-serif}
+html{background:var(--bg)}
+#bg{position:fixed;inset:0;z-index:-1}
+header{background:rgba(255,250,232,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:2px solid var(--line)}
+.brand{font-size:19px;letter-spacing:.5px}
+.brand::before{content:"✦ ";color:var(--accent-dark)}
+.card,.tile{border:2px solid var(--line);border-radius:22px}
+.card h2{font-size:17px}
+.tile{border-radius:18px}
+.tile .v{color:var(--ink)}
+.btn{border:2px solid var(--line);border-radius:14px;font-weight:600;box-shadow:0 3px 0 var(--line);transition:transform .08s,box-shadow .08s}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
+.btn.primary{background:var(--accent);border-color:var(--accent-dark);color:var(--accent-ink);box-shadow:0 4px 0 var(--accent-dark)}
+.btn.primary:active{box-shadow:0 1px 0 var(--accent-dark)}
+.btn.danger{color:var(--bad)}
+.seg{background:var(--accent-soft);border-radius:16px;padding:4px}
+.seg button{border-radius:12px;font-weight:600}
+.seg button.on{background:#fff;color:var(--accent-ink);box-shadow:0 3px 0 var(--accent-dark)}
+.chip{border:2px solid var(--line);font-weight:500}
+.chip.on{background:var(--accent);border-color:var(--accent-dark);color:var(--accent-ink);font-weight:700}
+input[type=text],input[type=date],select{border:2px solid var(--line);border-radius:14px;background:#fffdf6}
+input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
+.amount-wrap{border:2px solid var(--line);border-radius:18px;background:#fffdf6}
+.amount-wrap:focus-within{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
+.editing-tag,.tag{background:var(--accent-soft);color:var(--accent-ink)}
+.tx.sel,.rc-row.sel{background:var(--accent-soft)}
+nav#tabs{background:rgba(255,252,240,.95);border-top:2px solid var(--line);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+nav#tabs button{color:var(--ink3);font-weight:600}
+nav#tabs button svg{padding:2px 10px;width:44px;height:28px;border-radius:14px;transition:background .15s}
+nav#tabs button.on{color:var(--accent-ink)}
+nav#tabs button.on svg{background:var(--accent);stroke:var(--accent-ink)}
+.budget .track{height:14px;border:2px solid var(--line);background:#fff}
+.notice{border:2px solid #f6d27a;border-radius:18px}
+#toast{background:#3b2f1e;border-radius:16px;font-weight:600}
+#toast.err{background:#d63a3a}
+
+/* 吉祥物 */
+.buddy{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.buddy-pic{flex:none;width:84px;height:84px;cursor:pointer;animation:bob 3s ease-in-out infinite;filter:drop-shadow(0 4px 0 rgba(120,80,0,.12))}
+.buddy-pic svg,.buddy-pic img{width:100%;height:100%;object-fit:contain;display:block}
+.buddy-pic.hop{animation:hop .7s ease}
+.bubble{position:relative;flex:1;min-width:0;background:#fff;border:2px solid var(--line);border-radius:18px;padding:10px 14px;box-shadow:var(--shadow);font-size:15px}
+.bubble::before{content:"";position:absolute;left:-9px;top:50%;margin-top:-8px;border:8px solid transparent;border-right-color:var(--line);border-left:0}
+.bubble::after{content:"";position:absolute;left:-6px;top:50%;margin-top:-7px;border:7px solid transparent;border-right-color:#fff;border-left:0}
+.bubble .who{font-size:12px;font-weight:700;color:var(--accent-dark)}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes hop{0%{transform:translateY(0) scale(1)}25%{transform:translateY(-22px) scale(1.06,.94)}50%{transform:translateY(0) scale(1.08,.9)}70%{transform:translateY(-8px)}100%{transform:translateY(0)}}
+@media (prefers-reduced-motion: reduce){.buddy-pic,.buddy-pic.hop{animation:none}}
+
+/* 装扮设置 */
+.look-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.look-pic{width:72px;height:72px;border-radius:18px;background:var(--accent-soft);padding:6px}
+.look-pic svg,.look-pic img{width:100%;height:100%;object-fit:contain;display:block}
+.bg-chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin-bottom:10px}
+.bg-chip{height:64px;border-radius:14px;border:3px solid var(--line);cursor:pointer;display:flex;align-items:flex-end;justify-content:center;padding:4px;font-size:12px;font-weight:700;color:#3b2f1e;text-shadow:0 1px 0 #fff;background-size:cover;background-position:center}
+.bg-chip.on{border-color:var(--accent-dark);box-shadow:0 0 0 3px var(--accent)}
+
+/* 背景（原创图案，纯 CSS） */
+.bgp-cream{background:#fff7df}
+.bgp-meadow{background:
+  radial-gradient(circle at 85% 9%,#fff6b0 0 34px,rgba(255,230,120,.45) 35px 60px,transparent 61px),
+  radial-gradient(ellipse 70px 22px at 18% 16%,#fff 98%,transparent),radial-gradient(ellipse 46px 18px at 26% 13%,#fff 98%,transparent),
+  radial-gradient(ellipse 60px 18px at 62% 26%,#fff 98%,transparent),
+  radial-gradient(ellipse 120% 40% at 30% 100%,#9fd86f 60%,transparent 61%),
+  radial-gradient(ellipse 120% 45% at 85% 100%,#b6e58a 60%,transparent 61%),
+  linear-gradient(#bfe6ff,#eaf8ff 60%,#d8f3c0)}
+.bgp-sky{background:
+  radial-gradient(ellipse 90px 26px at 15% 12%,#fff 98%,transparent),radial-gradient(ellipse 60px 22px at 24% 9%,#fff 98%,transparent),
+  radial-gradient(ellipse 110px 30px at 78% 30%,#fff 98%,transparent),radial-gradient(ellipse 70px 24px at 70% 27%,#fff 98%,transparent),
+  radial-gradient(ellipse 80px 24px at 30% 62%,#fff 98%,transparent),radial-gradient(ellipse 100px 28px at 85% 80%,#fff 98%,transparent),
+  linear-gradient(#8fd0ff,#cdeeff)}
+.bgp-candy{background:
+  radial-gradient(circle at 12% 20%,rgba(255,255,255,.7) 0 18px,transparent 19px),radial-gradient(circle at 80% 12%,rgba(255,255,255,.6) 0 28px,transparent 29px),
+  radial-gradient(circle at 65% 55%,rgba(255,255,255,.55) 0 14px,transparent 15px),radial-gradient(circle at 25% 75%,rgba(255,255,255,.6) 0 24px,transparent 25px),
+  radial-gradient(circle at 90% 85%,rgba(255,255,255,.6) 0 12px,transparent 13px),
+  linear-gradient(135deg,#ffd6e8,#fff0c2 55%,#d6f0ff)}
+.bgp-dots{background:radial-gradient(circle,#ffd86b 0 6px,transparent 7px) 0 0/34px 34px,radial-gradient(circle,#ffe9a8 0 6px,transparent 7px) 17px 17px/34px 34px,#fff7df}
+.bgp-night{background:
+  radial-gradient(circle at 80% 12%,#fff8d6 0 26px,transparent 27px),
+  radial-gradient(1.5px 1.5px at 10% 20%,#fff 99%,transparent),radial-gradient(2px 2px at 30% 8%,#fff 99%,transparent),radial-gradient(1.5px 1.5px at 55% 25%,#fff 99%,transparent),
+  radial-gradient(2px 2px at 70% 40%,#fff 99%,transparent),radial-gradient(1.5px 1.5px at 20% 55%,#fff 99%,transparent),radial-gradient(2px 2px at 88% 62%,#fff 99%,transparent),
+  radial-gradient(1.5px 1.5px at 40% 80%,#fff 99%,transparent),radial-gradient(2px 2px at 65% 92%,#fff 99%,transparent),
+  linear-gradient(#2b2f6b,#5a4b9b 60%,#8a6fb8)}
+.bgp-photo{background:linear-gradient(rgba(255,250,235,.35),rgba(255,250,235,.35)),var(--bg-img) center/cover no-repeat}
 </style>
 </head>
 <body>
+<div id="bg" class="bgp-meadow"></div>
 <div id="fatal"></div>
 <header>
   <div class="bar">
@@ -180,6 +257,8 @@ details summary{cursor:pointer;color:var(--ink2);font-size:14px;margin-top:8px;p
 </header>
 <main>
   <section id="tab-record">
+    <div class="buddy"><div class="buddy-pic" id="buddy-pic" aria-label="吉祥物"></div>
+      <div class="bubble"><div class="who" id="buddy-name"></div><div id="buddy-say"></div></div></div>
     <div id="backup-notice"></div>
     <div id="upcoming"></div>
     <div id="rec-summary" class="summary"></div>
@@ -225,6 +304,22 @@ details summary{cursor:pointer;color:var(--ink2);font-size:14px;margin-top:8px;p
   </section>
 
   <section id="tab-settings" class="hide">
+    <div class="card">
+      <h2>装扮 <span class="sub">图片只存在你手机里，不会上传</span></h2>
+      <div class="look-row">
+        <div class="look-pic" id="look-pic"></div>
+        <div style="flex:1;min-width:180px">
+          <label class="f" style="margin-bottom:8px"><span>吉祥物的名字</span><input type="text" id="look-name" maxlength="10"></label>
+          <div class="actions"><button class="btn primary" id="look-mascot">换成我的图片…</button><button class="btn" id="look-mascot-reset">用回默认</button></div>
+        </div>
+      </div>
+      <p class="small muted" style="margin:0 0 12px">想用喜欢的角色？先把图片存到手机相册，再点「换成我的图片」选它。背景透明的 PNG 贴纸效果最好。</p>
+      <div class="small ink2" style="margin-bottom:6px">背景</div>
+      <div class="bg-chips" id="bg-chips"></div>
+      <button class="btn" id="look-bgphoto">用我的照片当背景…</button>
+      <input type="file" id="look-file-mascot" accept="image/*" class="hide">
+      <input type="file" id="look-file-bg" accept="image/*" class="hide">
+    </div>
     <div class="card" id="install-card">
       <h2>装到手机桌面</h2>
       <div id="install-body"></div>
@@ -620,7 +715,7 @@ function daysForAvg(m) {
 function renderAll() {
   $('#m-label').textContent = monthLabel(month);
   $('#monthbar').classList.toggle('hide', !['record', 'stats'].includes(tab));
-  if (tab === 'record') { renderNotice(); renderUpcoming(); renderRecSummary(); renderForm(false); renderFilters(); renderList(); }
+  if (tab === 'record') { renderBuddy(); renderNotice(); renderUpcoming(); renderRecSummary(); renderForm(false); renderFilters(); renderList(); }
   if (tab === 'stats') renderStats();
   if (tab === 'recurring') renderRecurring();
   if (tab === 'accounts') renderAccounts();
@@ -774,6 +869,7 @@ async function submitTx() {
   month = ymOf(body.date);
   $('#form-card').dataset.built = '';
   renderAll();
+  say(pick(k === 'income' ? CHEER_INC : CHEER_EXP), true, 5000);
   focusAmount();
 }
 
@@ -1093,6 +1189,7 @@ let rateDraft = null;
 function renderSettings() {
   const st = S.settings;
   rateDraft = Object.assign({}, st.rates);
+  renderLook();
   renderInstall();
   renderRates();
   $('#total-budget').value = st.total_budget_cents ? toCentsText(st.total_budget_cents) : '';
@@ -1140,6 +1237,87 @@ async function renderSnapshots() {
     return `<div class="bk"><div><div>${esc(s.label)}</div><div class="small muted">${t.getMonth() + 1}月${t.getDate()}日 ${pad(t.getHours())}:${pad(t.getMinutes())} · ${s.n} 笔</div></div>
       <button class="btn" data-snap="${esc(s.key)}">退回到这份</button></div>`;
   }).join('') : '<p class="small muted">还没有存档（第一次改动时会自动生成）</p>';
+}
+
+// ---------------------------------------------------------------- 装扮：吉祥物 + 背景（只存在手机里）
+// 默认吉祥物「小豆」：原创的圆滚滚小怪兽
+const DEFAULT_MASCOT = `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="60" cy="113" rx="30" ry="5" fill="rgba(120,80,0,.15)"/>
+  <path d="M60 33V20" stroke="#4e9e43" stroke-width="3.5" stroke-linecap="round"/>
+  <path d="M60 22c2-11 12-15 21-13-3 9-11 13-21 13z" fill="#7ccf6a" stroke="#4e9e43" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M60 24c-2-8-9-11-16-9 2 7 8 10 16 9z" fill="#9be08a" stroke="#4e9e43" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M24 74q-12 2-10 14" stroke="#4aa8e0" stroke-width="7" stroke-linecap="round" fill="none"/>
+  <path d="M96 74q12 2 10 14" stroke="#4aa8e0" stroke-width="7" stroke-linecap="round" fill="none"/>
+  <ellipse cx="44" cy="107" rx="11" ry="6" fill="#4aa8e0"/><ellipse cx="76" cy="107" rx="11" ry="6" fill="#4aa8e0"/>
+  <ellipse cx="60" cy="71" rx="40" ry="37" fill="#8fd6ff" stroke="#4aa8e0" stroke-width="3"/>
+  <ellipse cx="60" cy="85" rx="24" ry="17" fill="#d9f2ff"/>
+  <ellipse cx="45" cy="63" rx="7" ry="9" fill="#3b2f1e"/><ellipse cx="75" cy="63" rx="7" ry="9" fill="#3b2f1e"/>
+  <circle cx="47.5" cy="59.5" r="2.8" fill="#fff"/><circle cx="77.5" cy="59.5" r="2.8" fill="#fff"/>
+  <ellipse cx="34" cy="76" rx="6.5" ry="4" fill="#ffb3c7"/><ellipse cx="86" cy="76" rx="6.5" ry="4" fill="#ffb3c7"/>
+  <path d="M53 75q7 7 14 0" stroke="#3b2f1e" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+</svg>`;
+const BG_PRESETS = [['meadow', '阳光草地'], ['sky', '蓝天白云'], ['candy', '糖果泡泡'], ['dots', '黄色波点'], ['night', '星星夜空'], ['cream', '奶油纯色']];
+let LOOK = {name: '小豆', mascot: null, bg: 'meadow', bgImg: null};
+let buddyHoldUntil = 0;
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const CHEER_EXP = ['记下来啦！', '又记一笔，好厉害～', '收到！我帮你记着呢', '每一笔都算数！', '记账小能手就是你！'];
+const CHEER_INC = ['有钱进账！开心！', '哇，收入 +1！', '钱包鼓起来啦～'];
+const TAPS = ['戳我干嘛～快去记账！', '每周记得备份一次哦', '不用的会员记得取消～', '我会一直陪你记账的！', '今天也要好好吃饭哦'];
+
+async function loadLook() {
+  try { const l = await IDB.get('look'); if (l) LOOK = Object.assign(LOOK, l); } catch (e) {}
+  applyLook();
+}
+async function saveLook() {
+  try { await IDB.set('look', LOOK); } catch (e) { toast('装扮保存失败：' + (e.message || e), true); }
+}
+const mascotHTML = () => LOOK.mascot ? `<img src="${LOOK.mascot}" alt="">` : DEFAULT_MASCOT;
+function applyLook() {
+  const bg = $('#bg');
+  const preset = LOOK.bg === 'photo' && LOOK.bgImg ? 'photo' : (BG_PRESETS.some(p => p[0] === LOOK.bg) ? LOOK.bg : 'meadow');
+  bg.className = 'bgp-' + preset;
+  bg.style.setProperty('--bg-img', LOOK.bgImg ? `url("${LOOK.bgImg}")` : 'none');
+  $('#buddy-pic').innerHTML = mascotHTML();
+  $('#buddy-name').textContent = LOOK.name || '小豆';
+}
+function say(text, hop, holdMs) {
+  $('#buddy-say').textContent = text;
+  if (holdMs) buddyHoldUntil = Date.now() + holdMs;
+  if (hop) { const p = $('#buddy-pic'); p.classList.remove('hop'); void p.offsetWidth; p.classList.add('hop'); }
+}
+function greetLine() {
+  const h = new Date().getHours();
+  const hi = h < 6 ? '夜深了' : h < 11 ? '早上好' : h < 14 ? '中午好' : h < 18 ? '下午好' : '晚上好';
+  const today = todayStr();
+  let spent = 0;
+  for (const t of S.transactions) if (t.date === today && t.kind === 'expense') spent += conv(t.amount_cents, accCur(t.account_id));
+  const soon = S.recurring.filter(r => r.active && r.kind === 'expense' && daysUntil(r.next_date) >= 0 && daysUntil(r.next_date) <= 1)
+    .sort((a, b) => a.next_date < b.next_date ? -1 : 1);
+  const tb = S.settings.total_budget_cents, a = monthAgg(ymOf(today));
+  if (soon.length) return `${hi}！${dayWord(daysUntil(soon[0].next_date))}要扣「${soon[0].name}」${money(soon[0].amount_cents, accCur(soon[0].account_id))}，不想续记得取消哦～`;
+  if (tb && a.exp > tb) return `${hi}！这个月已经超预算 ${money(a.exp - tb, disp())} 了，我们省着点花吧～`;
+  return spent ? `${hi}！今天花了 ${money(spent, disp())}，都记下来了，真棒～` : `${hi}！今天还没有花钱，继续保持～`;
+}
+function renderBuddy() { if (Date.now() > buddyHoldUntil) say(greetLine()); }
+
+function renderLook() {
+  $('#look-pic').innerHTML = mascotHTML();
+  $('#look-name').value = LOOK.name || '小豆';
+  const chips = BG_PRESETS.map(([k, n]) => `<div class="bg-chip bgp-${k} ${LOOK.bg === k ? 'on' : ''}" data-bg="${k}">${n}</div>`);
+  if (LOOK.bgImg) chips.push(`<div class="bg-chip ${LOOK.bg === 'photo' ? 'on' : ''}" data-bg="photo" style="background-image:url('${LOOK.bgImg}')">我的照片</div>`);
+  $('#bg-chips').innerHTML = chips.join('');
+}
+async function imageToData(file, max, type) {
+  const url = URL.createObjectURL(file);
+  try {
+    const img = new Image();
+    await new Promise((res, rej) => { img.onload = res; img.onerror = () => rej(new Error('这张图片打不开，换一张试试')); img.src = url; });
+    const k = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+    const cv = document.createElement('canvas');
+    cv.width = Math.max(1, Math.round(img.naturalWidth * k)); cv.height = Math.max(1, Math.round(img.naturalHeight * k));
+    cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+    return cv.toDataURL(type === 'png' ? 'image/png' : 'image/jpeg', .85);
+  } finally { URL.revokeObjectURL(url); }
 }
 
 // ---------------------------------------------------------------- 备份
@@ -1213,6 +1391,26 @@ function bind() {
     filters.cat = r.dataset.cat; filters.acc = ''; filters.q = ''; $('#flt-q').value = '';
     setTab('record');
     setTimeout(() => $('#tx-list').scrollIntoView({block: 'start'}), 0);
+  };
+  // 装扮
+  $('#buddy-pic').onclick = () => say(pick(TAPS), true, 5000);
+  $('#look-name').onchange = async e => { LOOK.name = e.target.value.trim() || '小豆'; await saveLook(); applyLook(); toast('名字改好啦'); };
+  $('#look-mascot').onclick = () => $('#look-file-mascot').click();
+  $('#look-bgphoto').onclick = () => $('#look-file-bg').click();
+  $('#look-mascot-reset').onclick = async () => { LOOK.mascot = null; await saveLook(); applyLook(); renderLook(); toast('已用回默认吉祥物'); };
+  $('#look-file-mascot').onchange = async e => {
+    const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+    try { LOOK.mascot = await imageToData(f, 360, 'png'); } catch (err) { toast(err.message, true); return; }
+    await saveLook(); applyLook(); renderLook(); toast('吉祥物换好啦！');
+  };
+  $('#look-file-bg').onchange = async e => {
+    const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+    try { LOOK.bgImg = await imageToData(f, 1280, 'jpeg'); } catch (err) { toast(err.message, true); return; }
+    LOOK.bg = 'photo'; await saveLook(); applyLook(); renderLook(); toast('背景换好啦！');
+  };
+  $('#bg-chips').onclick = async e => {
+    const c = e.target.closest('[data-bg]'); if (!c) return;
+    LOOK.bg = c.dataset.bg; await saveLook(); applyLook(); renderLook();
   };
   const openRule = id => {
     const r = S.recurring.find(x => x.id === id); if (!r) return;
@@ -1314,6 +1512,7 @@ async function start() {
     await IDB.set('data', d);
     d.transactions.sort(byDateDesc);
     S = d;
+    await loadLook();
   } catch (e) {
     const f = $('#fatal'); f.style.display = 'block';
     f.textContent = '打不开手机里的存储（' + (e && e.message || e) + '）。请不要用无痕/隐私模式打开，或换用 Chrome 浏览器。';
