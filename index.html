@@ -192,6 +192,25 @@ nav#tabs button.on svg{background:var(--accent);stroke:var(--accent-ink)}
 #toast{background:#3b2f1e;border-radius:16px;font-weight:600}
 #toast.err{background:#d63a3a}
 
+/* 记账表单：紧凑版 */
+#form-card{padding:12px 14px}
+.seg.compact{margin-bottom:10px}
+.seg.compact button{padding:6px}
+#form-card .amount-wrap{margin-bottom:10px;padding:0 12px}
+#form-card .amount-wrap input{font-size:26px;padding:6px}
+.amt-hint{font-size:12px;color:var(--ink3);white-space:nowrap}
+.chips.compact{gap:6px;margin-bottom:10px}
+.chips.compact .chip{padding:4px 12px;font-size:14px}
+.chip.more{border-style:dashed;color:var(--ink2);background:transparent}
+.tight{margin-bottom:10px}
+.xfer{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:6px;align-items:center;margin-bottom:10px}
+.xfer .arrow{font-weight:700;color:var(--ink2)}
+.note-row{display:flex;gap:8px;align-items:stretch}
+.note-row input{flex:1;min-width:0}
+.note-row .btn{flex:none;padding:10px 26px}
+#rec-summary .tile{padding:8px 12px}
+#rec-summary .tile .h{display:none}
+
 /* 吉祥物 */
 .buddy{display:flex;align-items:center;gap:12px;margin-bottom:12px}
 .buddy-pic{flex:none;width:84px;height:84px;cursor:pointer;animation:bob 3s ease-in-out infinite;filter:drop-shadow(0 4px 0 rgba(120,80,0,.12))}
@@ -204,6 +223,22 @@ nav#tabs button.on svg{background:var(--accent);stroke:var(--accent-ink)}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 @keyframes hop{0%{transform:translateY(0) scale(1)}25%{transform:translateY(-22px) scale(1.06,.94)}50%{transform:translateY(0) scale(1.08,.9)}70%{transform:translateY(-8px)}100%{transform:translateY(0)}}
 @media (prefers-reduced-motion: reduce){.buddy-pic,.buddy-pic.hop{animation:none}}
+
+/* 侧边探头的吉祥物 */
+.peek{position:fixed;right:0;bottom:calc(var(--navh) + env(safe-area-inset-bottom) + 90px);z-index:9;display:flex;align-items:center;pointer-events:none}
+.peek .buddy-pic{pointer-events:auto;width:76px;height:76px;animation:none;transform:translateX(42px) rotate(-24deg);transition:transform .4s cubic-bezier(.3,1.5,.5,1)}
+.peek.out .buddy-pic{transform:translateX(-6px) rotate(0)}
+.pic-inner{width:100%;height:100%}
+.pic-inner.hop{animation:hop .7s ease}
+.peek-bubble{pointer-events:none;position:relative;max-width:min(250px,60vw);background:#fff;border:2px solid var(--line);border-radius:18px;padding:9px 13px;box-shadow:var(--shadow);font-size:15px;margin-right:6px;
+  opacity:0;visibility:hidden;transform:translateX(24px) scale(.92);transition:opacity .25s,transform .25s,visibility .25s}
+.peek.out .peek-bubble{opacity:1;visibility:visible;transform:none;pointer-events:auto}
+.peek-bubble::before{content:"";position:absolute;right:-9px;top:50%;margin-top:-8px;border:8px solid transparent;border-left-color:var(--line);border-right:0}
+.peek-bubble::after{content:"";position:absolute;right:-6px;top:50%;margin-top:-7px;border:7px solid transparent;border-left-color:#fff;border-right:0}
+.peek-bubble .who{font-size:12px;font-weight:700;color:var(--accent-dark)}
+.peek-dot{position:absolute;right:2px;top:-4px;width:20px;height:20px;border-radius:50%;background:#e04848;color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;pointer-events:none;box-shadow:0 0 0 2px #fff}
+.peek.out .peek-dot{display:none}
+@media (prefers-reduced-motion: reduce){.peek .buddy-pic,.peek-bubble{transition:none}.pic-inner.hop{animation:none}}
 
 /* 装扮设置 */
 .look-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
@@ -257,8 +292,6 @@ nav#tabs button.on svg{background:var(--accent);stroke:var(--accent-ink)}
 </header>
 <main>
   <section id="tab-record">
-    <div class="buddy"><div class="buddy-pic" id="buddy-pic" aria-label="吉祥物"></div>
-      <div class="bubble"><div class="who" id="buddy-name"></div><div id="buddy-say"></div></div></div>
     <div id="backup-notice"></div>
     <div id="upcoming"></div>
     <div id="rec-summary" class="summary"></div>
@@ -305,24 +338,15 @@ nav#tabs button.on svg{background:var(--accent);stroke:var(--accent-ink)}
 
   <section id="tab-settings" class="hide">
     <div class="card">
-      <h2>装扮 <span class="sub">图片只存在你手机里，不会上传</span></h2>
-      <div class="look-row">
-        <div class="look-pic" id="look-pic"></div>
-        <div style="flex:1;min-width:180px">
-          <label class="f" style="margin-bottom:8px"><span>吉祥物的名字</span><input type="text" id="look-name" maxlength="10"></label>
-          <div class="actions"><button class="btn primary" id="look-mascot">换成我的图片…</button><button class="btn" id="look-mascot-reset">用回默认</button></div>
-        </div>
-      </div>
-      <p class="small muted" style="margin:0 0 12px">想用喜欢的角色？先把图片存到手机相册，再点「换成我的图片」选它。背景透明的 PNG 贴纸效果最好。</p>
-      <div class="small ink2" style="margin-bottom:6px">背景</div>
-      <div class="bg-chips" id="bg-chips"></div>
-      <button class="btn" id="look-bgphoto">用我的照片当背景…</button>
-      <input type="file" id="look-file-mascot" accept="image/*" class="hide">
-      <input type="file" id="look-file-bg" accept="image/*" class="hide">
+      <h2>每月预算</h2>
+      <div class="rate-row"><span>每月总支出预算</span><input type="text" id="total-budget" inputmode="decimal" placeholder="不设就空着"><span id="tb-cur" class="ink2"></span></div>
+      <p class="small muted" style="margin:0 0 8px">某个分类的预算，在下面「支出分类」每行的第二个框里填。空着就是不设。</p>
+      <button class="btn primary" id="tb-save">保存总预算</button>
     </div>
-    <div class="card" id="install-card">
-      <h2>装到手机桌面</h2>
-      <div id="install-body"></div>
+    <div class="card">
+      <h2>币种和汇率 <span class="sub">不联网，汇率请自己按实际填</span></h2>
+      <div id="rates"></div>
+      <button class="btn primary" id="rates-save">保存汇率</button>
     </div>
     <div class="card">
       <h2>备份 <span class="sub" id="last-backup"></span></h2>
@@ -339,21 +363,37 @@ nav#tabs button.on svg{background:var(--accent);stroke:var(--accent-ink)}
         <div id="snap-list"></div></details>
       <p class="small muted" id="persist-state"></p>
     </div>
-    <div class="card">
-      <h2>币种和汇率 <span class="sub">不联网，汇率请自己按实际填</span></h2>
-      <div id="rates"></div>
-      <button class="btn primary" id="rates-save">保存汇率</button>
-    </div>
-    <div class="card">
-      <h2>每月预算</h2>
-      <div class="rate-row"><span>每月总支出预算</span><input type="text" id="total-budget" inputmode="decimal" placeholder="不设就空着"><span id="tb-cur" class="ink2"></span></div>
-      <p class="small muted" style="margin:0 0 8px">某个分类的预算，在下面「支出分类」每行的第二个框里填。空着就是不设。</p>
-      <button class="btn primary" id="tb-save">保存总预算</button>
-    </div>
     <div class="card"><h2>支出分类 <span class="sub">改完自动保存</span></h2><div id="cats-expense"></div></div>
     <div class="card"><h2>收入分类 <span class="sub">改完自动保存</span></h2><div id="cats-income"></div></div>
+    <div class="card" id="install-card">
+      <h2>装到手机桌面</h2>
+      <div id="install-body"></div>
+    </div>
+    <div class="card">
+      <h2>装扮 <span class="sub">图片只存在你手机里，不会上传</span></h2>
+      <div class="look-row">
+        <div class="look-pic" id="look-pic"></div>
+        <div style="flex:1;min-width:180px">
+          <label class="f" style="margin-bottom:8px"><span>吉祥物的名字</span><input type="text" id="look-name" maxlength="10"></label>
+          <div class="actions"><button class="btn primary" id="look-mascot">换成我的图片…</button><button class="btn" id="look-mascot-reset">用回默认</button></div>
+        </div>
+      </div>
+      <p class="small muted" style="margin:0 0 12px">想用喜欢的角色？先把图片存到手机相册，再点「换成我的图片」选它。背景透明的 PNG 贴纸效果最好。</p>
+      <div class="small ink2" style="margin-bottom:6px">背景</div>
+      <div class="bg-chips" id="bg-chips"></div>
+      <button class="btn" id="look-bgphoto">用我的照片当背景…</button>
+      <input type="file" id="look-file-mascot" accept="image/*" class="hide">
+      <input type="file" id="look-file-bg" accept="image/*" class="hide">
+    </div>
   </section>
 </main>
+
+<!-- 吉祥物：平时在右边探个头，点一下滑出来说话 -->
+<div id="peek" class="peek">
+  <div class="peek-bubble" id="peek-bubble"><div class="who" id="buddy-name"></div><div id="buddy-say"></div></div>
+  <div class="buddy-pic" id="buddy-pic" role="button" aria-label="点我聊天"></div>
+  <span class="peek-dot hide" id="peek-dot">!</span>
+</div>
 
 <nav id="tabs">
   <button data-tab="record" class="on"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>记账</button>
@@ -635,6 +675,7 @@ let month = ymOf(todayStr());
 let editingId = null;
 let form = {kind: 'expense', category_id: null};
 let toTouched = false;
+let catsOpen = false;
 let accEditing = null;
 let persisted = null;
 let installEvt = null;
@@ -727,6 +768,8 @@ function setTab(t) {
   TABS.forEach(x => $('#tab-' + x).classList.toggle('hide', x !== t));
   store.set('tab', t);
   if (t === 'record') $('#form-card').dataset.built = '';
+  peekIn();
+  $('#peek').classList.toggle('hide', t !== 'record');   // 小豆只在记账页探头
   renderAll();
   scrollTo(0, 0);
 }
@@ -751,7 +794,7 @@ function renderRecSummary() {
 
 function visibleAccounts(keepId) { return S.accounts.filter(a => !a.hidden || a.id === keepId); }
 function accOptions(sel) {
-  return visibleAccounts(sel).map(a => `<option value="${a.id}" ${a.id === sel ? 'selected' : ''}>${esc(a.name)}（${esc(a.currency)}）</option>`).join('');
+  return visibleAccounts(sel).map(a => `<option value="${a.id}" ${a.id === sel ? 'selected' : ''}>${esc(a.name)} ${esc(SYM[a.currency] || a.currency)}</option>`).join('');
 }
 
 function renderForm(rebuild) {
@@ -767,47 +810,49 @@ function renderForm(rebuild) {
   if (form.category_id != null && (catById(form.category_id) || {}).kind !== k) form.category_id = null;
   const cats = S.categories.filter(c => c.kind === k && (!c.hidden || (t && c.id === t.category_id)));
   const defDate = t ? t.date : (store.get('lastDateSet', '') === todayStr() && store.get('lastDate', null)) || todayStr();
+  // 分类按常用程度排序，平时只显示前 9 个，其余收在「更多」里，表单更短
+  const used = {};
+  for (const x of S.transactions) if (x.kind === k && x.category_id) used[x.category_id] = (used[x.category_id] || 0) + 1;
+  const sorted = cats.slice().sort((a, b) => (used[b.id] || 0) - (used[a.id] || 0) || a.sort - b.sort);
+  const LIMIT = 9;
+  let shown = catsOpen || sorted.length <= LIMIT + 1 ? sorted : sorted.slice(0, LIMIT);
+  if (form.category_id && !shown.some(c => c.id === form.category_id)) {
+    const sel = sorted.find(c => c.id === form.category_id); if (sel) shown = [...shown.slice(0, LIMIT - 1), sel];
+  }
+  const moreBtn = shown.length < sorted.length ? '<button class="chip more" data-more="1">更多 ▾</button>'
+    : (catsOpen && sorted.length > LIMIT + 1 ? '<button class="chip more" data-more="0">收起 ▴</button>' : '');
+  const noteInput = `<input type="text" id="f-note" maxlength="200" enterkeyhint="done" autocomplete="off" placeholder="备注（可不填）" value="${t ? esc(t.note) : ''}">`;
   card.innerHTML = `
-    <h2>${editingId ? '修改这笔账 <span class="editing-tag">修改中</span>' : '记一笔'}</h2>
-    <div class="seg" id="kind-seg">
+    ${editingId ? '<h2>修改这笔账 <span class="editing-tag">修改中</span></h2>' : ''}
+    <div class="seg compact" id="kind-seg">
       ${['expense', 'income', 'transfer'].map(x => `<button data-k="${x}" class="${x === k ? 'on' : ''}">${KIND_NAME[x]}</button>`).join('')}
     </div>
-    <label class="f"><span>金额 <span class="muted">（可以写 12+8.5）</span></span>
-      <div class="amount-wrap"><span class="cur" id="f-cur"></span><input type="text" id="f-amount" inputmode="decimal" enterkeyhint="done" autocomplete="off" placeholder="0.00" value="${t ? toCentsText(t.amount_cents) : ''}"></div>
-    </label>
+    <div class="amount-wrap"><span class="cur" id="f-cur"></span><input type="text" id="f-amount" inputmode="decimal" enterkeyhint="done" autocomplete="off" placeholder="0.00" aria-label="金额" value="${t ? toCentsText(t.amount_cents) : ''}"><span class="amt-hint">可写 12+8.5</span></div>
     ${k === 'transfer' ? `
-      <div class="row2">
-        <label class="f"><span>从哪个账户转出</span><select id="f-acc">${accOptions(defAcc)}</select></label>
-        <label class="f"><span>转到哪个账户</span><select id="f-to">${accOptions(defTo)}</select></label>
-      </div>
+      <div class="xfer"><select id="f-acc" aria-label="从哪个账户转出">${accOptions(defAcc)}</select><span class="arrow">→</span><select id="f-to" aria-label="转到哪个账户">${accOptions(defTo)}</select></div>
       <label class="f" id="f-to-amt-wrap"><span>到账金额 <span class="muted" id="f-to-hint"></span></span>
         <input type="text" id="f-to-amount" inputmode="decimal" autocomplete="off" value="${t && t.to_amount_cents ? toCentsText(t.to_amount_cents) : ''}"></label>
+      <div class="row2 tight"><input type="date" id="f-date" aria-label="日期" value="${defDate}">${editingId ? noteInput : '<span></span>'}</div>
     ` : `
-      <label class="f"><span>分类</span><div class="chips" id="f-cats">
-        ${cats.map(c => `<button class="chip ${c.id === form.category_id ? 'on' : ''}" data-c="${c.id}">${esc(c.name)}</button>`).join('') || '<span class="muted small">还没有分类，去「设置」添加</span>'}
-      </div></label>
-      <label class="f"><span>账户</span><select id="f-acc">${accOptions(defAcc)}</select></label>
+      <div class="chips compact" id="f-cats">
+        ${shown.map(c => `<button class="chip ${c.id === form.category_id ? 'on' : ''}" data-c="${c.id}">${esc(c.name)}</button>`).join('') || '<span class="muted small">还没有分类，去「设置」添加</span>'}${moreBtn}
+      </div>
+      <div class="row2 tight"><select id="f-acc" aria-label="账户">${accOptions(defAcc)}</select><input type="date" id="f-date" aria-label="日期" value="${defDate}"></div>
+      ${editingId ? `<div class="tight">${noteInput}</div>` : ''}
     `}
-    <div class="row2">
-      <label class="f"><span>日期</span><input type="date" id="f-date" value="${defDate}"></label>
-      <label class="f"><span>备注（可不填）</span><input type="text" id="f-note" maxlength="200" enterkeyhint="done" autocomplete="off" value="${t ? esc(t.note) : ''}"></label>
-    </div>
-    <div class="actions">
-      <button class="btn primary big grow" id="f-save">${editingId ? '保存修改' : '保存'}</button>
-      ${editingId ? '<button class="btn big danger" id="f-del">删除</button><button class="btn big" id="f-cancel">取消</button>' : ''}
-    </div>`;
+    ${editingId ? `<div class="actions">
+      <button class="btn primary big grow" id="f-save">保存修改</button><button class="btn big danger" id="f-del">删除</button><button class="btn big" id="f-cancel">取消</button>
+    </div>` : `<div class="note-row">${noteInput}<button class="btn primary big" id="f-save">保存</button></div>`}`;
   toTouched = !!(t && t.kind === 'transfer');
   $('#kind-seg').onclick = e => {
     const b = e.target.closest('button'); if (!b) return;
-    const keep = [$('#f-amount').value, $('#f-note').value, $('#f-date').value];
     form.kind = b.dataset.k;
-    renderForm(true);
-    [$('#f-amount').value, $('#f-note').value, $('#f-date').value] = keep;
-    updateFormBits();
+    rebuildFormKeep();
   };
   const catsEl = $('#f-cats');
   if (catsEl) catsEl.onclick = e => {
     const b = e.target.closest('.chip'); if (!b) return;
+    if (b.dataset.more) { catsOpen = b.dataset.more === '1'; rebuildFormKeep(); return; }
     form.category_id = Number(b.dataset.c);
     $$('#f-cats .chip').forEach(x => x.classList.toggle('on', x === b));
   };
@@ -819,6 +864,15 @@ function renderForm(rebuild) {
   if ($('#f-del')) $('#f-del').onclick = deleteTx;
   if ($('#f-cancel')) $('#f-cancel').onclick = () => cancelEdit();
   $$('#f-amount, #f-note, #f-to-amount').forEach(el => el.onkeydown = e => { if (e.key === 'Enter') { e.preventDefault(); e.target.blur(); submitTx(); } });
+  updateFormBits();
+}
+
+// 重画表单但保留已经填的内容（切换支出/收入/转账、展开更多分类时用）
+function rebuildFormKeep() {
+  const keep = {amount: $('#f-amount').value, note: $('#f-note').value, date: $('#f-date').value, acc: $('#f-acc') && $('#f-acc').value};
+  renderForm(true);
+  $('#f-amount').value = keep.amount; $('#f-note').value = keep.note; $('#f-date').value = keep.date;
+  if (keep.acc && [...$('#f-acc').options].some(o => o.value === keep.acc)) $('#f-acc').value = keep.acc;
   updateFormBits();
 }
 
@@ -869,7 +923,7 @@ async function submitTx() {
   month = ymOf(body.date);
   $('#form-card').dataset.built = '';
   renderAll();
-  say(pick(k === 'income' ? CHEER_INC : CHEER_EXP), true, 5000);
+  say(pick(k === 'income' ? CHEER_INC : CHEER_EXP), true, 3000);
   focusAmount();
 }
 
@@ -1258,7 +1312,6 @@ const DEFAULT_MASCOT = `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000
 </svg>`;
 const BG_PRESETS = [['meadow', '阳光草地'], ['sky', '蓝天白云'], ['candy', '糖果泡泡'], ['dots', '黄色波点'], ['night', '星星夜空'], ['cream', '奶油纯色']];
 let LOOK = {name: '小豆', mascot: null, bg: 'meadow', bgImg: null};
-let buddyHoldUntil = 0;
 const pick = a => a[Math.floor(Math.random() * a.length)];
 const CHEER_EXP = ['记下来啦！', '又记一笔，好厉害～', '收到！我帮你记着呢', '每一笔都算数！', '记账小能手就是你！'];
 const CHEER_INC = ['有钱进账！开心！', '哇，收入 +1！', '钱包鼓起来啦～'];
@@ -1277,28 +1330,39 @@ function applyLook() {
   const preset = LOOK.bg === 'photo' && LOOK.bgImg ? 'photo' : (BG_PRESETS.some(p => p[0] === LOOK.bg) ? LOOK.bg : 'meadow');
   bg.className = 'bgp-' + preset;
   bg.style.setProperty('--bg-img', LOOK.bgImg ? `url("${LOOK.bgImg}")` : 'none');
-  $('#buddy-pic').innerHTML = mascotHTML();
+  $('#buddy-pic').innerHTML = `<div class="pic-inner">${mascotHTML()}</div>`;
   $('#buddy-name').textContent = LOOK.name || '小豆';
 }
-function say(text, hop, holdMs) {
+// 小豆滑出来说一句话，过几秒自己缩回去
+let peekTimer;
+function peekIn() { clearTimeout(peekTimer); $('#peek').classList.remove('out'); }
+function say(text, hop, ms) {
   $('#buddy-say').textContent = text;
-  if (holdMs) buddyHoldUntil = Date.now() + holdMs;
-  if (hop) { const p = $('#buddy-pic'); p.classList.remove('hop'); void p.offsetWidth; p.classList.add('hop'); }
+  $('#peek').classList.add('out');
+  if (hop) { const p = $('#buddy-pic .pic-inner'); if (p) { p.classList.remove('hop'); void p.offsetWidth; p.classList.add('hop'); } }
+  clearTimeout(peekTimer); peekTimer = setTimeout(peekIn, ms || 5000);
+}
+// 需要提醒的事：明天/今天要扣的会员、超预算
+function importantLine() {
+  const soon = S.recurring.filter(r => r.active && r.kind === 'expense' && daysUntil(r.next_date) >= 0 && daysUntil(r.next_date) <= 1)
+    .sort((a, b) => a.next_date < b.next_date ? -1 : 1);
+  if (soon.length) return `${dayWord(daysUntil(soon[0].next_date))}要扣「${soon[0].name}」${money(soon[0].amount_cents, accCur(soon[0].account_id))}，不想续记得取消哦～`;
+  const tb = S.settings.total_budget_cents, a = monthAgg(ymOf(todayStr()));
+  if (tb && a.exp > tb) return `这个月已经超预算 ${money(a.exp - tb, disp())} 了，我们省着点花吧～`;
+  return null;
 }
 function greetLine() {
   const h = new Date().getHours();
   const hi = h < 6 ? '夜深了' : h < 11 ? '早上好' : h < 14 ? '中午好' : h < 18 ? '下午好' : '晚上好';
+  const imp = importantLine();
+  if (imp) return `${hi}！${imp}`;
   const today = todayStr();
   let spent = 0;
   for (const t of S.transactions) if (t.date === today && t.kind === 'expense') spent += conv(t.amount_cents, accCur(t.account_id));
-  const soon = S.recurring.filter(r => r.active && r.kind === 'expense' && daysUntil(r.next_date) >= 0 && daysUntil(r.next_date) <= 1)
-    .sort((a, b) => a.next_date < b.next_date ? -1 : 1);
-  const tb = S.settings.total_budget_cents, a = monthAgg(ymOf(today));
-  if (soon.length) return `${hi}！${dayWord(daysUntil(soon[0].next_date))}要扣「${soon[0].name}」${money(soon[0].amount_cents, accCur(soon[0].account_id))}，不想续记得取消哦～`;
-  if (tb && a.exp > tb) return `${hi}！这个月已经超预算 ${money(a.exp - tb, disp())} 了，我们省着点花吧～`;
   return spent ? `${hi}！今天花了 ${money(spent, disp())}，都记下来了，真棒～` : `${hi}！今天还没有花钱，继续保持～`;
 }
-function renderBuddy() { if (Date.now() > buddyHoldUntil) say(greetLine()); }
+// 有要提醒的事时，探出来的小豆头上会有个红色「!」
+function renderBuddy() { $('#peek-dot').classList.toggle('hide', !importantLine()); }
 
 function renderLook() {
   $('#look-pic').innerHTML = mascotHTML();
@@ -1393,7 +1457,12 @@ function bind() {
     setTimeout(() => $('#tx-list').scrollIntoView({block: 'start'}), 0);
   };
   // 装扮
-  $('#buddy-pic').onclick = () => say(pick(TAPS), true, 5000);
+  let tapN = 0;
+  $('#buddy-pic').onclick = () => {
+    if ($('#peek').classList.contains('out')) { peekIn(); return; }
+    say(tapN++ % 2 === 0 ? greetLine() : pick(TAPS), true, 6000);
+  };
+  $('#peek-bubble').onclick = peekIn;
   $('#look-name').onchange = async e => { LOOK.name = e.target.value.trim() || '小豆'; await saveLook(); applyLook(); toast('名字改好啦'); };
   $('#look-mascot').onclick = () => $('#look-file-mascot').click();
   $('#look-bgphoto').onclick = () => $('#look-file-bg').click();
