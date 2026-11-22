@@ -225,18 +225,23 @@ nav#tabs button.on svg{background:var(--accent);stroke:var(--accent-ink)}
 @media (prefers-reduced-motion: reduce){.buddy-pic,.buddy-pic.hop{animation:none}}
 
 /* 侧边探头的吉祥物 */
-.peek{position:fixed;right:0;bottom:calc(var(--navh) + env(safe-area-inset-bottom) + 90px);z-index:9;display:flex;align-items:center;pointer-events:none}
-.peek .buddy-pic{pointer-events:auto;width:76px;height:76px;animation:none;transform:translateX(42px) rotate(-24deg);transition:transform .4s cubic-bezier(.3,1.5,.5,1)}
-.peek.out .buddy-pic{transform:translateX(-6px) rotate(0)}
+/* 放在左上角：平时从左边探出大半个身子，点一下整个滑出来 */
+.peek{position:fixed;left:0;top:calc(env(safe-area-inset-top) + 2px);z-index:9;display:flex;flex-direction:row-reverse;align-items:flex-start;pointer-events:none}
+.peek .buddy-pic{pointer-events:auto;width:66px;height:66px;animation:none;transform:translateX(-16px) rotate(16deg);transition:transform .4s cubic-bezier(.3,1.5,.5,1)}
+.peek.out .buddy-pic{transform:translateX(6px) rotate(0)}
+body.peek-on header .bar{padding-left:62px}
+.brand{white-space:nowrap}
+body.peek-on .brand::before{content:none}
+@media (max-width:400px){body.peek-on .brand{font-size:17px}.monthbar .m{min-width:88px}}
 .pic-inner{width:100%;height:100%}
 .pic-inner.hop{animation:hop .7s ease}
-.peek-bubble{pointer-events:none;position:relative;max-width:min(250px,60vw);background:#fff;border:2px solid var(--line);border-radius:18px;padding:9px 13px;box-shadow:var(--shadow);font-size:15px;margin-right:6px;
-  opacity:0;visibility:hidden;transform:translateX(24px) scale(.92);transition:opacity .25s,transform .25s,visibility .25s}
+.peek-bubble{pointer-events:none;position:relative;max-width:min(260px,64vw);background:#fff;border:2px solid var(--line);border-radius:18px;padding:9px 13px;box-shadow:var(--shadow);font-size:15px;margin:14px 0 0 14px;
+  opacity:0;visibility:hidden;transform:translateX(-24px) scale(.92);transition:opacity .25s,transform .25s,visibility .25s}
 .peek.out .peek-bubble{opacity:1;visibility:visible;transform:none;pointer-events:auto}
-.peek-bubble::before{content:"";position:absolute;right:-9px;top:50%;margin-top:-8px;border:8px solid transparent;border-left-color:var(--line);border-right:0}
-.peek-bubble::after{content:"";position:absolute;right:-6px;top:50%;margin-top:-7px;border:7px solid transparent;border-left-color:#fff;border-right:0}
+.peek-bubble::before{content:"";position:absolute;left:-9px;top:16px;border:8px solid transparent;border-right-color:var(--line);border-left:0}
+.peek-bubble::after{content:"";position:absolute;left:-6px;top:17px;border:7px solid transparent;border-right-color:#fff;border-left:0}
 .peek-bubble .who{font-size:12px;font-weight:700;color:var(--accent-dark)}
-.peek-dot{position:absolute;right:2px;top:-4px;width:20px;height:20px;border-radius:50%;background:#e04848;color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;pointer-events:none;box-shadow:0 0 0 2px #fff}
+.peek-dot{position:absolute;left:36px;top:0;width:20px;height:20px;border-radius:50%;background:#e04848;color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;pointer-events:none;box-shadow:0 0 0 2px #fff}
 .peek.out .peek-dot{display:none}
 @media (prefers-reduced-motion: reduce){.peek .buddy-pic,.peek-bubble{transition:none}.pic-inner.hop{animation:none}}
 
@@ -770,6 +775,7 @@ function setTab(t) {
   if (t === 'record') $('#form-card').dataset.built = '';
   peekIn();
   $('#peek').classList.toggle('hide', t !== 'record');   // 小豆只在记账页探头
+  document.body.classList.toggle('peek-on', t === 'record');
   renderAll();
   scrollTo(0, 0);
 }
