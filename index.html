@@ -192,6 +192,11 @@ nav#tabs button.on svg{background:var(--accent);stroke:var(--accent-ink)}
 #toast{background:#3b2f1e;border-radius:16px;font-weight:600}
 #toast.err{background:#d63a3a}
 
+/* 账户拖动排序 */
+td.drag{width:30px;padding:8px 2px 8px 0;font-size:20px;color:var(--ink3);cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;text-align:center}
+tr.dragging{background:var(--accent-soft);box-shadow:0 4px 14px rgba(120,80,0,.18)}
+tr.dragging td.drag{cursor:grabbing;color:var(--accent-dark)}
+
 /* 记账表单：紧凑版 */
 #form-card{padding:12px 14px}
 .seg.compact{margin-bottom:10px}
@@ -360,9 +365,11 @@ body.peek-on .brand::before{content:none}
         <button class="btn primary big" id="bk-share">发送备份文件（微信 / 网盘）</button>
         <button class="btn" id="bk-save">把备份文件存到手机「下载」里</button>
         <button class="btn" id="bk-import">用备份文件恢复…</button>
+        <button class="btn" id="bk-merge">导入以前的账（不改余额）…</button>
         <button class="btn" id="csv-share">导出成表格（Excel 能打开）</button>
       </div>
       <input type="file" id="bk-file" accept=".txt,.json,text/plain,application/json" class="hide">
+      <input type="file" id="bk-merge-file" accept=".txt,.json,text/plain,application/json" class="hide">
       <details style="margin-top:10px"><summary>手机里的自动存档（改错了可以退回）</summary>
         <p class="small muted" style="margin:4px 0">每天第一次改动前会自动存一份，保留最近 10 份。它们也存在浏览器里，不能代替上面的备份文件。</p>
         <div id="snap-list"></div></details>
@@ -614,6 +621,39 @@ const ops = {
     Object.assign(old, r);
   },
   ruleDelete: id => d => { d.recurring = d.recurring.filter(r => r.id !== id); },
+  accountReorder: ids => d => {
+    ids.forEach((id, i) => { const a = d.accounts.find(x => x.id === id); if (a) a.sort = i; });
+    d.accounts.sort((a, b) => a.sort - b.sort);
+  },
+  // 导入以前的账：加进来，同时把对应账户的初始余额往回调，保证现在的余额一分不变
+  importMerge: imp => d => {
+    const list = imp.transactions;
+    const missingAcc = [...new Set(list.map(t => t.account))].filter(n => !d.accounts.some(a => a.name === n));
+    if (missingAcc.length) throw new ApiError('记账本里找不到这些账户：' + missingAcc.join('、') + '。请先在「账户」页建好同名账户再导入。');
+    const newCats = [];
+    for (const t of list) {
+      if (!['expense', 'income'].includes(t.kind)) throw new ApiError('导入文件里有不认识的类型');
+      if (!d.categories.some(c => c.kind === t.kind && c.name === t.category)) {
+        d.categories.push({id: d.next_id++, name: t.category, kind: t.kind, budget_cents: null, sort: d.categories.length, hidden: 0});
+        newCats.push(t.category);
+      }
+    }
+    // 已经有一模一样的账（同一天、同类型、同金额、同账户、同分类）就跳过，防止重复导入
+    const keyOf = (date, kind, amt, accId, catId) => [date, kind, amt, accId, catId].join('|');
+    const have = {};
+    for (const t of d.transactions) { const k = keyOf(t.date, t.kind, t.amount_cents, t.account_id, t.category_id); have[k] = (have[k] || 0) + 1; }
+    let added = 0, skipped = 0; const byMonth = {};
+    for (const t of list) {
+      const acc = d.accounts.find(a => a.name === t.account), cat = d.categories.find(c => c.kind === t.kind && c.name === t.category);
+      const v = validateTx(d, {date: t.date, kind: t.kind, amount_cents: t.amount_cents, account_id: acc.id, category_id: cat.id, note: t.note || ''});
+      const k = keyOf(v.date, v.kind, v.amount_cents, v.account_id, v.category_id);
+      if (have[k]) { have[k]--; skipped++; continue; }
+      v.id = d.next_id++; d.transactions.push(v); added++;
+      acc.initial_cents += v.kind === 'expense' ? v.amount_cents : -v.amount_cents;
+      const m = ymOf(v.date); byMonth[m] = byMonth[m] || {n: 0, cents: 0, cur: acc.currency}; byMonth[m].n++; byMonth[m].cents += v.amount_cents;
+    }
+    return {added, skipped, newCats, byMonth};
+  },
   // 把到期的固定收支补记上；返回记了哪些
   runRecurring: today => d => {
     const made = [];
@@ -1207,14 +1247,44 @@ function renderAccounts() {
       if (t.to_account_id === a.id) mi += t.to_amount_cents;
     }
     return `<tr class="click" data-acc="${a.id}">
+      <td class="drag" aria-label="按住拖动排序">⠿</td>
       <td>${esc(a.name)}${a.hidden ? ' <span class="muted small">（隐藏）</span>' : ''}<div class="muted small">${CUR_NAME[a.currency] || a.currency}</div></td>
       <td class="r num"><b>${money(b[a.id], a.currency)}</b>${a.currency !== d ? `<div class="muted small">≈${money(conv(b[a.id], a.currency), d)}</div>` : ''}</td>
       <td class="r num small ink2">进 ${money(mi, a.currency)}<br>出 ${money(mo, a.currency)}</td></tr>`;
   }).join('');
-  $('#acc-list').innerHTML = `<table><tr><th>账户</th><th class="r">余额</th><th class="r">本月</th></tr>${rows}</table>
-    <p class="small muted">余额 = 初始余额 + 收入 − 支出 ± 转账。和实际对不上时，改一下「初始余额」。</p>`;
+  $('#acc-list').innerHTML = `<table><tr><th></th><th>账户</th><th class="r">余额</th><th class="r">本月</th></tr>${rows}</table>
+    <p class="small muted">按住左边的 ⠿ 上下拖，可以调整账户顺序（记账时的账户列表也会跟着变）。<br>余额 = 初始余额 + 收入 − 支出 ± 转账。和实际对不上时，改一下「初始余额」。</p>`;
+  enableAccDrag();
   renderAccForm();
 }
+// 按住 ⠿ 拖动账户排序（手指和鼠标都行）
+function enableAccDrag() {
+  const table = $('#acc-list table');
+  table.querySelectorAll('.drag').forEach(h => {
+    h.onpointerdown = e => {
+      e.preventDefault();
+      const row = h.closest('tr');
+      row.classList.add('dragging');
+      try { h.setPointerCapture(e.pointerId); } catch (err) {}
+      const move = ev => {
+        const y = ev.clientY;
+        for (const r of table.querySelectorAll('tr[data-acc]')) {
+          if (r === row) continue;
+          const b = r.getBoundingClientRect();
+          if (y > b.top && y < b.bottom) { if (y < b.top + b.height / 2) r.before(row); else r.after(row); break; }
+        }
+      };
+      const up = async () => {
+        h.removeEventListener('pointermove', move); h.removeEventListener('pointerup', up); h.removeEventListener('pointercancel', up);
+        row.classList.remove('dragging');
+        const ids = [...table.querySelectorAll('tr[data-acc]')].map(r => Number(r.dataset.acc));
+        if (ids.join() !== S.accounts.map(a => a.id).join()) { if (await act(ops.accountReorder(ids), '顺序已保存')) renderAccounts(); }
+      };
+      h.addEventListener('pointermove', move); h.addEventListener('pointerup', up); h.addEventListener('pointercancel', up);
+    };
+  });
+}
+
 function renderAccForm() {
   const a = accEditing && accEditing !== 'new' ? accById(accEditing) : null;
   const used = a ? accountUsage(S, a.id) > 0 : false;
@@ -1496,6 +1566,7 @@ function bind() {
   $('#rc-subs').onclick = $('#rc-others').onclick = e => { const r = e.target.closest('[data-rule]'); if (r) openRule(Number(r.dataset.rule)); };
   $('#upcoming').onclick = e => { const r = e.target.closest('[data-rule]'); if (r) openRule(Number(r.dataset.rule)); };
   $('#acc-list').onclick = e => {
+    if (e.target.closest('.drag')) return;
     const r = e.target.closest('[data-acc]'); if (!r) return;
     accEditing = Number(r.dataset.acc); renderAccForm();
     $('#acc-form').scrollIntoView({behavior: 'smooth', block: 'start'});
@@ -1556,6 +1627,33 @@ function bind() {
   $('#bk-share').onclick = () => doBackup(true);
   $('#bk-save').onclick = () => doBackup(false);
   $('#csv-share').onclick = () => { const d = new Date(); shareOrSave(csvBlob(), `记账表格-${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}.csv`, true); };
+  $('#bk-merge').onclick = () => $('#bk-merge-file').click();
+  $('#bk-merge-file').onchange = async e => {
+    const f = e.target.files[0]; e.target.value = '';
+    if (!f) return;
+    let imp;
+    try { imp = JSON.parse((await f.text()).replace(/^﻿/, '')); } catch (err) { toast('读不出这个文件', true); return; }
+    if (!imp || imp.app !== 'my-ledger-import' || !Array.isArray(imp.transactions)) {
+      toast(looksLikeLedger(imp) ? '这是完整备份文件，请用「用备份文件恢复…」' : '这个文件不是导入文件', true); return;
+    }
+    // 先在副本上试算一遍，给你看会发生什么，确认后才真正导入
+    let preview;
+    try { preview = ops.importMerge(imp)(structuredClone(S)); }
+    catch (err) { toast(err instanceof ApiError ? err.message : '导入文件有问题：' + err.message, true); return; }
+    const months = Object.keys(preview.byMonth).sort().map(m => `　${monthLabel(m)}：${preview.byMonth[m].n} 笔，共 ${money(preview.byMonth[m].cents, preview.byMonth[m].cur)}`).join('\n');
+    const msg = `将导入 ${preview.added} 笔账：\n${months}` +
+      (preview.skipped ? `\n\n已经有的 ${preview.skipped} 笔会跳过（不会重复记）。` : '') +
+      (preview.newCats.length ? `\n\n会新建分类：${[...new Set(preview.newCats)].join('、')}` : '') +
+      `\n\n所有账户的余额保持不变。导入前会自动存档，导错了可以在「手机里的自动存档」退回。\n\n确定导入吗？`;
+    if (!preview.added) { toast(preview.skipped ? '这些账都已经导入过了' : '文件里没有账', true); return; }
+    if (!confirm(msg)) return;
+    const cur = structuredClone(S); delete cur._snapDay;
+    await saveSnapshot(cur, '导入前自动保存');
+    let r;
+    try { r = await mutate(ops.importMerge(imp)); } catch (err) { toast('导入失败：' + (err.message || err), true); return; }
+    toast(`已导入 ${r.added} 笔 ✓ 余额没变`, false, 4000);
+    renderAll();
+  };
   $('#bk-import').onclick = () => $('#bk-file').click();
   $('#bk-file').onchange = async e => {
     const f = e.target.files[0]; e.target.value = '';
@@ -1586,6 +1684,7 @@ async function start() {
     migrate(d);
     await IDB.set('data', d);
     d.transactions.sort(byDateDesc);
+    d.accounts.sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0));
     S = d;
     await loadLook();
   } catch (e) {
